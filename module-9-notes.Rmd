@@ -1,0 +1,102 @@
+---
+title: "Module 9 Notes"
+author: "Alexandra Boville"
+date: "2024-01-31"
+output: html_document
+---
+
+```{r}
+library(sjmisc)
+library(tidyverse)
+```
+5 number summary (John Tukey 1977)
+- sample minimum
+- lowest for first quartile
+- median
+- upper quartile or third quartile
+- sample maximum
+- mean/arithmetic average
+
+```{r}
+f <- "~/Desktop/BIO384K - Applied Data Analysis/Country-Data-2016.csv"
+d <- read_csv(f, col_names = TRUE, show_col_types = FALSE)
+names(d)
+```
+
+```{r}
+attach(d)
+mean(life_expect, na.rm = TRUE)
+```
+```{r}
+detach(d)
+#mean(life_expect, na.rm=TRUE) # this throws an error!
+mean(d$life_expect, na.rm = TRUE)
+```
+NOTE: The with() function accomplishes much the same thing as attach() but is self-contained and cleaner, especially for use in functions. If you use with(), however, all code to be run should be included as an argument of the function.
+
+```{r}
+with(d, mean(life_expect, na.rm = TRUE))
+```
+
+##9.5 Exploring Single Variables
+Loading data
+```{r}
+f <- "~/Desktop/BIO384K - Applied Data Analysis/Country-Data-2016.csv"
+d <- read_csv(f, col_names = TRUE, show_col_types = FALSE)
+head (d)
+```
+```{r}
+names(d)
+```
+
+Summarizing number of variable observation and number of countries
+```{r}
+nrow(d)
+ncol(d)
+length(d$country)
+```
+
+
+```{r}
+summary(d)
+```
+checking for duplicate country rows.... there are none
+```{r}
+c <- length(unique(d$country))
+c
+```
+
+Mean area and population size for all countries
+```{r}
+median(d$area, na.rm = TRUE)
+median(d$population, na.rm = TRUE)
+```
+
+Creating new density variable which is population/area. 
+```{r}
+density <- (d$population/d$area)
+d_density <- d %>% 
+  mutate(density)
+#other ways to create density column
+#d$density <- d$population/d$area
+#d <-cbind(d, density) using density assigned to vector above
+d_density
+
+```
+
+What are the 10 most dense countries?
+```{r}
+d <- d_density[order(d_density$density, decreasing = TRUE), ]
+#alternative way to sort 
+#d <- d |> arrange(desc(density))
+#head(d,10)
+#special pipe operator %<>% so it would automatically assign to d (re-assignnment)
+#d %<>% arrange(desc(density))
+d[1:10, ]
+```
+The 10 least dense?
+```{r}
+d <- d_density[order(d_density$density, decreasing = FALSE), ]
+d[1:10, ]
+```
+
